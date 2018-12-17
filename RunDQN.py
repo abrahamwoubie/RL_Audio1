@@ -16,10 +16,6 @@ grid_size=GlobalVariables #To access the size of grid from Global Variables.py
 env = Environment(grid_size.nRow,grid_size.nCol)
 agent = DQNAgent(env)
 
-Number_of_Iterations=[]
-Number_of_Episodes=[]
-reward_List = []
-
 if (options.use_samples):
     samples_goal = samples.Extract_Samples(grid_size.nRow - 1, grid_size.nCol - 1)
 elif (options.use_pitch):
@@ -29,41 +25,57 @@ elif (options.use_spectrogram):
 else:
     samples_goal = samples.Extract_Raw_Data(grid_size.nRow - 1, grid_size.nCol - 1)
 
-for episode in range(parameter.Number_of_episodes):
-    #done = False
-    state = env.reset()
-    state=Extract.Extract_Samples(state[0],state[1])
-    state = np.reshape(state, [1, parameter.state_size])
-    iterations=0
-    Number_of_Episodes.append(episode)
-    #for time in range(parameter.timesteps):
-    while True:
-    #for iterations in range(parameter.timesteps):
-    #for iterations in range(parameter.timesteps):
-        iterations+=1
-        action = agent.act(state)
-        next_state, reward, done = env.step(action,samples_goal)
-        next_state = np.reshape(next_state, [1, parameter.state_size])
-        agent.replay_memory(state, action, reward, next_state, done)
-        state = next_state
-        if done:
-            break
-        if len(agent.memory) > parameter.batch_size:
-            agent.replay(parameter.batch_size)
-    Number_of_Iterations.append(iterations)
-    reward_List.append(reward)
-    print("episode: {}/{}, iteration: {}, reward {}".format(episode, parameter.Number_of_episodes, iterations, reward))
+for i in range(parameter.how_many_times):
+    print("************************************************************************************")
+    print("Iteration",i+1)
+    Number_of_Iterations=[]
+    Number_of_Episodes=[]
+    reward_List = []
+    filename = str(grid_size.nRow) + "X" + str(grid_size.nCol) + "_Experiment.txt"
+    for episode in range(1,parameter.Number_of_episodes+1):
+        file = open(filename, 'a')
+        #done = False
+        state = env.reset()
+        #print("Start and Gola states at Episode {} is {} and  {}".format(episode+1, state, goal_state))
+        state=Extract.Extract_Samples(state[0],state[1])
+        state = np.reshape(state, [1, parameter.state_size])
+        iterations=0
+        Number_of_Episodes.append(episode)
+        #for time in range(parameter.timesteps):
+        while True:
+            iterations+=1
+            action = agent.act(state)
+            next_state, reward, done = env.step(action,samples_goal)
+            next_state = np.reshape(next_state, [1, parameter.state_size])
+            agent.replay_memory(state, action, reward, next_state, done)
+            state = next_state
+            if done:
+                break
+            if len(agent.memory) > parameter.batch_size:
+                agent.replay(parameter.batch_size)
+        Number_of_Iterations.append(iterations)
+        reward_List.append(reward)
+        print("episode: {}/{}, iteration: {}, reward {}".format(episode, parameter.Number_of_episodes, iterations, reward))
 
-percentage_of_successful_episodes = (sum(reward_List) / parameter.Number_of_episodes) * 100
-print("Percentage of Successful Episodes is {} {}".format(percentage_of_successful_episodes, '%'))
+    #print(Number_of_Episodes)
+    #print(Number_of_Iterations)
+    #file.write("Episode = " + str(Number_of_Episodes))
+    file.write(str(Number_of_Iterations))
+    file.write('\n')
+    file.close()
+    #percentage_of_successful_episodes = (sum(reward_List) / parameter.Number_of_episodes) * 100
+    #print("Percentage of Successful Episodes is {} {}".format(percentage_of_successful_episodes, '%'))
 
-fig = plt.figure()
-fig.suptitle('Q-Learning', fontsize=12)
-title="DQN "+str(grid_size.nRow) + "X" + str(grid_size.nCol)
-fig.suptitle(title, fontsize=12)
-plt.plot(np.arange(len(Number_of_Episodes)), Number_of_Iterations)
-plt.ylabel('Number of Iterations')
-plt.xlabel('Episode Number')
-filename=title+'.png1'
-plt.savefig(filename)
-plt.show()
+    fig = plt.figure()
+    fig.suptitle('Q-Learning', fontsize=12)
+    title=str(grid_size.nRow) + "X" + str(grid_size.nCol) + '_'+ str(i+1)
+    fig.suptitle(title, fontsize=12)
+    plt.plot(np.arange(len(Number_of_Episodes)), Number_of_Iterations)
+    plt.ylabel('Number of Iterations')
+    plt.xlabel('Episode Number')
+    filename=title+'.png'
+    plt.savefig(filename)
+    plt.show(block=False)
+    plt.pause(3)
+    plt.close()
+    print("************************************************************************************")
