@@ -22,10 +22,10 @@ class Environment:
 
     def reset(self):
         # Reset agent state to top-left grid corner
-        #self.state = (0, 0)
-        start_row = random.choice(range(0, grid_size.nRow - 1))
-        start_col = random.choice(range(0, grid_size.nCol - 1))
-        self.state = (start_row, start_col)
+        self.state = (0, 0)
+        # start_row = random.choice(range(0, grid_size.nRow - 1))
+        # start_col = random.choice(range(0, grid_size.nCol - 1))
+        # self.state = (start_row, start_col)
 
         # goal_row = random.choice(range(0, nRow - 1))
         # goal_col = random.choice(range(0, nCol - 1))

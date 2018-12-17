@@ -3,6 +3,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 from GlobalVariables import GlobalVariables
+from keras.layers import Dense, Conv2D, Flatten
 
 import random
 import numpy as np
@@ -32,12 +33,21 @@ class DQNAgent:
     def _build_model(self):
         # Neural Net for Deep-Q learning Model
         model = Sequential()
-        model.add(Dense(32, input_dim=parameter.state_size, activation='relu'))
+        model.add(Dense(32, input_shape=(parameter.state_size,), activation='relu'))
         model.add(Dense(32, activation='relu'))
         model.add(Dense(parameter.action_size, activation='linear'))
         model.compile(loss='mse',
                       optimizer=Adam(lr=self.learning_rate))
         return model
+
+    # def _build_model(self):
+    #     model = Sequential()
+    #     model.add(Conv2D(64, kernel_size=1, activation='relu', input_shape = (parameter.batch_size, parameter.state_size, 1)))
+    #     model.add(Conv2D(32, kernel_size=1, activation='relu'))
+    #     model.add(Flatten())
+    #     model.add(Dense(parameter.action_size, activation='softmax'))
+    #     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    #     return model
 
     def replay_memory(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))

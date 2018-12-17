@@ -39,6 +39,7 @@ for episode in range(parameter.Number_of_episodes):
     #for time in range(parameter.timesteps):
     while True:
     #for iterations in range(parameter.timesteps):
+    #for iterations in range(parameter.timesteps):
         iterations+=1
         action = agent.act(state)
         next_state, reward, done = env.step(action,samples_goal)
@@ -63,6 +64,6 @@ fig.suptitle(title, fontsize=12)
 plt.plot(np.arange(len(Number_of_Episodes)), Number_of_Iterations)
 plt.ylabel('Number of Iterations')
 plt.xlabel('Episode Number')
-filename=title+'.png'
+filename=title+'.png1'
 plt.savefig(filename)
 plt.show()

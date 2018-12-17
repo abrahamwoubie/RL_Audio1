@@ -10,9 +10,9 @@ class GlobalVariables :
     state_size = 100
     action_size = 4
     batch_size = 32
-    Number_of_episodes=5
+    Number_of_episodes=500
     timesteps=200
 
     #Grid Size
-    nRow = 2
-    nCol = 2
+    nRow = 20
+    nCol = 20
