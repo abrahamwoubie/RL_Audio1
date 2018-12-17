@@ -36,8 +36,7 @@ class DQNAgent:
         model.add(Dense(32, input_shape=(parameter.state_size,), activation='relu'))
         model.add(Dense(32, activation='relu'))
         model.add(Dense(parameter.action_size, activation='linear'))
-        model.compile(loss='mse',
-                      optimizer=Adam(lr=self.learning_rate))
+        model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
         return model
 
     # def _build_model(self):
