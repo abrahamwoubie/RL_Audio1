@@ -10,11 +10,11 @@ class GlobalVariables :
     state_size = 100
     action_size = 4
     batch_size = 32
-    Number_of_episodes=100
-    timesteps=50
-    how_many_times = 10 #How many times to run the same experiment
+    Number_of_episodes=5
+    timesteps=10
+    how_many_times = 5 #How many times to run the same experiment
 
     #Grid Size
-    nRow = 20
-    nCol = 20
+    nRow = 3
+    nCol = 3
 

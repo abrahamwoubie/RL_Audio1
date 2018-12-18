@@ -5,6 +5,7 @@ from GlobalVariables import GlobalVariables
 from AgentDQN import DQNAgent
 import numpy as np
 import matplotlib.pyplot as plt
+import pylab
 
 Extract=Extract_Features
 
@@ -15,15 +16,7 @@ grid_size=GlobalVariables #To access the size of grid from Global Variables.py
 
 env = Environment(grid_size.nRow,grid_size.nCol)
 agent = DQNAgent(env)
-
-if (options.use_samples):
-    samples_goal = samples.Extract_Samples(grid_size.nRow - 1, grid_size.nCol - 1)
-elif (options.use_pitch):
-    samples_goal = samples.Extract_Pitch(grid_size.nRow - 1, grid_size.nCol - 1)
-elif (options.use_spectrogram):
-    samples_goal = samples.Extract_Spectrogram(grid_size.nRow - 1, grid_size.nCol - 1)
-else:
-    samples_goal = samples.Extract_Raw_Data(grid_size.nRow - 1, grid_size.nCol - 1)
+list=[]
 
 for i in range(parameter.how_many_times):
     print("************************************************************************************")
@@ -35,14 +28,26 @@ for i in range(parameter.how_many_times):
     for episode in range(1,parameter.Number_of_episodes+1):
         file = open(filename, 'a')
         #done = False
-        state = env.reset()
+        state,goal_state = env.reset()
         #print("Start and Gola states at Episode {} is {} and  {}".format(episode+1, state, goal_state))
         state=Extract.Extract_Samples(state[0],state[1])
         state = np.reshape(state, [1, parameter.state_size])
+
+        if (options.use_samples):
+            samples_goal = samples.Extract_Samples(goal_state[0],goal_state[1])
+        elif (options.use_pitch):
+            samples_goal = samples.Extract_Pitch(goal_state[0],goal_state[1])
+        elif (options.use_spectrogram):
+            samples_goal = samples.Extract_Spectrogram(goal_state[0],goal_state[1])
+        else:
+            samples_goal = samples.Extract_Raw_Data(goal_state[0],goal_state[1])
+
         iterations=0
         Number_of_Episodes.append(episode)
-        #for time in range(parameter.timesteps):
-        while True:
+        for time in range(parameter.timesteps):
+        #done=False
+        #while True:
+        #while not done:
             iterations+=1
             action = agent.act(state)
             next_state, reward, done = env.step(action,samples_goal)
@@ -60,9 +65,12 @@ for i in range(parameter.how_many_times):
     #print(Number_of_Episodes)
     #print(Number_of_Iterations)
     #file.write("Episode = " + str(Number_of_Episodes))
-    file.write(str(Number_of_Iterations))
-    file.write('\n')
-    file.close()
+    #file.write(str(Number_of_Iterations))
+    #file.write('\n')
+    #file.close()
+    list.append(Number_of_Iterations)
+    print(list)
+
     #percentage_of_successful_episodes = (sum(reward_List) / parameter.Number_of_episodes) * 100
     #print("Percentage of Successful Episodes is {} {}".format(percentage_of_successful_episodes, '%'))
 
@@ -79,3 +87,21 @@ for i in range(parameter.how_many_times):
     plt.pause(3)
     plt.close()
     print("************************************************************************************")
+
+mu=np.mean(list, axis=0)
+std=np.std(list, axis=0)
+
+Episode_Number = []
+for i in range(1,len(list[0])+1):
+    Episode_Number.append(i)
+
+pylab.plot(Episode_Number, mu, '-b', label='Mean')
+pylab.plot(Episode_Number, std, '-r', label='Standard Deviation')
+pylab.legend(loc='upper left')
+pylab.ylim(0, max(np.max(mu),np.max(std))+1)
+pylab.xlim(1, np.max(Episode_Number)+1)
+pylab.xlabel('Episode Number')
+pylab.ylabel('Iteration')
+pylab.show()
+
+

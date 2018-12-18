@@ -25,13 +25,14 @@ class Environment:
         #self.state = (0, 0)
         start_row = random.choice(range(0, grid_size.nRow - 1))
         start_col = random.choice(range(0, grid_size.nCol - 1))
+
+        goal_row = random.choice(range(0, grid_size.nRow - 1))
+        goal_col = random.choice(range(0, grid_size.nCol - 1))
+
         self.state = (start_row, start_col)
+        self.goal_state=(goal_row,goal_col)
 
-        # goal_row = random.choice(range(0, grid_size.nRow - 1))
-        # goal_col = random.choice(range(0, grid_size.nCol - 1))
-        # self.goal_state=(goal_row,goal_col)
-
-        return self.state  # ,self.goal_state
+        return self.state, self.goal_state
 
     def step(self, action,samples_goal):
 
