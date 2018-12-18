@@ -4,7 +4,7 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 from GlobalVariables import GlobalVariables
 from keras.layers import Dense, Conv2D, Flatten
-
+from keras import optimizers
 import random
 import numpy as np
 
@@ -28,6 +28,8 @@ class DQNAgent:
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.999
         self.learning_rate = 0.001
+        self.exploration_min = 0.01
+        self.exploration_decay = 0.995
         self.model = self._build_model()
 
 
@@ -35,11 +37,15 @@ class DQNAgent:
     def _build_model(self):
         # Neural Net for Deep-Q learning Model
         model = Sequential()
-        model.add(Dense(32, input_shape=(parameter.state_size,), activation='relu', kernel_initializer='he_uniform'))
-        model.add(Dense(32, activation='relu', kernel_initializer='he_uniform'))
-        model.add(Dense(parameter.action_size, activation='linear', kernel_initializer='he_uniform'))
-        model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
+        model.add(Dense(24, input_shape=(parameter.state_size,), kernel_initializer='uniform',activation='softmax'))
+        model.add(Dense(24, activation='softmax', kernel_initializer='uniform'))
+        model.add(Dense(parameter.action_size, activation='linear'))
+        #model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
+        sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+        model.compile(loss='mean_squared_error', optimizer='sgd')
         return model
+
+
 
     # model = Sequential()
     # model.add(Dense(20, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
@@ -79,18 +85,21 @@ class DQNAgent:
         act_values = self.model.predict(state)
         return np.argmax(act_values[0])  # returns action
 
+
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
-                target = (reward + self.discount_factor *
-                          np.max(self.model.predict(next_state)[0]))
+                target = (reward + self.discount_factor * np.max(self.model.predict(next_state)[0]))
             target_f = self.model.predict(state)
             target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
+            self.model.fit(state, target_f, batch_size=parameter.batch_size,epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
+
+
     def load(self, name):
         self.model.load_weights(name)
 

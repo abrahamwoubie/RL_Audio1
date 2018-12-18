@@ -22,15 +22,17 @@ class Environment:
 
     def reset(self):
         # Reset agent state to top-left grid corner
-        #self.state = (0, 0)
-        start_row = random.choice(range(0, grid_size.nRow - 1))
-        start_col = random.choice(range(0, grid_size.nCol - 1))
+        self.state = (0, 0)
+        self.goal_state=(grid_size.nRow-1,grid_size.nCol-1)
+        #
+        # start_row = random.choice(range(0, grid_size.nRow - 1))
+        # start_col = random.choice(range(0, grid_size.nCol - 1))
+        #
+        # goal_row = random.choice(range(0, grid_size.nRow - 1))
+        # goal_col = random.choice(range(0, grid_size.nCol - 1))
 
-        goal_row = random.choice(range(0, grid_size.nRow - 1))
-        goal_col = random.choice(range(0, grid_size.nCol - 1))
-
-        self.state = (start_row, start_col)
-        self.goal_state=(goal_row,goal_col)
+        # self.state = (start_row, start_col)
+        # self.goal_state=(goal_row,goal_col)
 
         return self.state, self.goal_state
 
@@ -50,10 +52,10 @@ class Environment:
         if(action==3): # left
             state_next = self.state[0]  , (self.state[1] - 1)
 
-        # if (state_next[0]==self.Nx-1 and state_next[1]==self.Ny-1):
-        #     reward=1
-        #     done=True
-
+        if (state_next[0]==samples_goal[0] and state_next[1]==samples_goal[1]):
+            reward=1
+            done=True
+        #
         samples_current=Extract.Extract_Samples(state_next[0],state_next[1])
 
         if (distance.euclidean(samples_goal, samples_current) == 0):
@@ -63,6 +65,7 @@ class Environment:
         # Update state
         self.state = state_next
         return samples_current, reward, done
+        #return state_next,reward,done
 
     def allowed_actions(self):
         # Generate list of actions allowed depending on agent grid location

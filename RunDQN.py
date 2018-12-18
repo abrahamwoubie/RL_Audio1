@@ -18,6 +18,15 @@ env = Environment(grid_size.nRow,grid_size.nCol)
 agent = DQNAgent(env)
 list=[]
 
+# if (options.use_samples):
+#     samples_goal = samples.Extract_Samples(grid_size.nRow-1,grid_size.nCol-1)
+# elif (options.use_pitch):
+#     samples_goal = samples.Extract_Pitch(grid_size.nRow-1,grid_size.nCol-1)
+# elif (options.use_spectrogram):
+#     samples_goal = samples.Extract_Spectrogram(grid_size.nRow-1,grid_size.nCol-1)
+# else:
+#     samples_goal = samples.Extract_Raw_Data(grid_size.nRow-1,grid_size.nCol-1)
+
 for i in range(parameter.how_many_times):
     print("************************************************************************************")
     print("Iteration",i+1)
@@ -26,13 +35,13 @@ for i in range(parameter.how_many_times):
     reward_List = []
     filename = str(grid_size.nRow) + "X" + str(grid_size.nCol) + "_Experiment.txt"
     for episode in range(1,parameter.Number_of_episodes+1):
-        file = open(filename, 'a')
+        #file = open(filename, 'a')
         #done = False
         state,goal_state = env.reset()
         #print("Start and Gola states at Episode {} is {} and  {}".format(episode+1, state, goal_state))
         state=Extract.Extract_Samples(state[0],state[1])
         state = np.reshape(state, [1, parameter.state_size])
-
+        #
         if (options.use_samples):
             samples_goal = samples.Extract_Samples(goal_state[0],goal_state[1])
         elif (options.use_pitch):
@@ -44,10 +53,10 @@ for i in range(parameter.how_many_times):
 
         iterations=0
         Number_of_Episodes.append(episode)
-        for time in range(parameter.timesteps):
-        #done=False
+        #for time in range(parameter.timesteps):
+        done=False
         #while True:
-        #while not done:
+        while not done:
             iterations+=1
             action = agent.act(state)
             next_state, reward, done = env.step(action,samples_goal)
@@ -82,7 +91,7 @@ for i in range(parameter.how_many_times):
     plt.ylabel('Number of Iterations')
     plt.xlabel('Episode Number')
     filename=title+'.png'
-    plt.savefig(filename)
+    #plt.savefig(filename)
     plt.show(block=False)
     plt.pause(3)
     plt.close()
@@ -102,6 +111,8 @@ pylab.ylim(0, max(np.max(mu),np.max(std))+1)
 pylab.xlim(1, np.max(Episode_Number)+1)
 pylab.xlabel('Episode Number')
 pylab.ylabel('Iteration')
+filename=str(grid_size.nRow)+'X'+str(grid_size.nCol)+'_'+str(parameter.how_many_times)+'_times.png'
+pylab.savefig(filename)
 pylab.show()
 
 
