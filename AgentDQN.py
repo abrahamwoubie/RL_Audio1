@@ -13,13 +13,6 @@ grid_size=GlobalVariables
 
 class DQNAgent:
     def __init__(self,env):
-        #self.state_size = state_size
-        #self.action_size = action_size
-
-        #self.state_dim = env.state_dim #use if for Q-Learning
-        #self.action_dim = env.action_dim #use if for Q-Learning
-        # self.Q = np.zeros(self.state_dim + self.action_dim, dtype=float)#use if for Q-Learning
-
         self.state_dim=parameter.state_size
         self.action_dim=parameter.action_size
         self.memory = deque(maxlen=2000)
@@ -44,24 +37,6 @@ class DQNAgent:
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
         model.compile(loss='mean_squared_error', optimizer='sgd')
         return model
-
-
-
-    # model = Sequential()
-    # model.add(Dense(20, input_dim=self.state_size, activation='relu', kernel_initializer='he_uniform'))
-    # model.add(Dense(20, activation='relu', kernel_initializer='he_uniform'))
-    # model.add(Dense(self.action_size, activation='linear', kernel_initializer='he_uniform'))
-    # model.summary()
-    #         model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
-
-    # def _build_model(self):
-    #     model = Sequential()
-    #     model.add(Conv2D(64, kernel_size=1, activation='relu', input_shape = (parameter.batch_size, parameter.state_size, 1)))
-    #     model.add(Conv2D(32, kernel_size=1, activation='relu'))
-    #     model.add(Flatten())
-    #     model.add(Dense(parameter.action_size, activation='softmax'))
-    #     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    #     return model
 
     def replay_memory(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
@@ -97,8 +72,6 @@ class DQNAgent:
             self.model.fit(state, target_f, batch_size=parameter.batch_size,epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
-
-
 
     def load(self, name):
         self.model.load_weights(name)
