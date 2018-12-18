@@ -1,3 +1,7 @@
+import scipy
+import scipy.io
+from scipy import signal
+import scipy.io.wavfile
 import numpy as np
 import aubio
 from scipy import signal # audio processing
@@ -25,24 +29,31 @@ class Extract_Features:
             samples = [row + col + np.sin(2 * np.pi * f * (i / fs)) for i in x]
         return samples
 
-    def Extract_Spectrogram(row, col):
-        fs = 10e3
-        N = 1e5
-        amp = 2 * np.sqrt(2)
-        noise_power = 0.01 * fs / 2
-        time = np.arange(N) / float(fs)
-        mod = 500 * np.cos(2 * np.pi * 0.25 * time)
-        carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
-        # noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
-        # noise *= np.exp(-time / 5)
-        # x = carrier + noise  # x is the sample
-        x = carrier
-        frequencies, times, spectrogram = signal.spectrogram(x, fs)
+    def Extract_Spectrogram(row,col):
+        sample_rate, data = scipy.io.wavfile.read('Hello.wav')
+        # Spectrogram of .wav file
+        sample_freq, segment_time, spec_data = signal.spectrogram(data, sample_rate)
         if (row == grid_size.nRow and col == grid_size.nCol):
-            spectrogram = spectrogram *100
-        else:
-            spectrogram = spectrogram + row + col
-        return spectrogram
+            spec_data=spec_data*2
+        return spec_data
+    # def Extract_Spectrogram(row, col):
+    #     fs = 10e3
+    #     N = 1e5
+    #     amp = 2 * np.sqrt(2)
+    #     noise_power = 0.01 * fs / 2
+    #     time = np.arange(N) / float(fs)
+    #     mod = 500 * np.cos(2 * np.pi * 0.25 * time)
+    #     carrier = amp * np.sin(2 * np.pi * 3e3 * time + mod)
+    #     # noise = np.random.normal(scale=np.sqrt(noise_power), size=time.shape)
+    #     # noise *= np.exp(-time / 5)
+    #     # x = carrier + noise  # x is the sample
+    #     x = carrier
+    #     frequencies, times, spectrogram = signal.spectrogram(x, fs)
+    #     if (row == grid_size.nRow and col == grid_size.nCol):
+    #         spectrogram = spectrogram *100
+    #     else:
+    #         spectrogram = spectrogram + row + col
+    #     return spectrogram
 
     def Extract_Pitch(row, col):
 

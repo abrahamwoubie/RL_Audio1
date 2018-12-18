@@ -52,13 +52,14 @@ class Environment:
         if(action==3): # left
             state_next = self.state[0]  , (self.state[1] - 1)
 
-        if (state_next[0]==samples_goal[0] and state_next[1]==samples_goal[1]):
-            reward=1
-            done=True
+        # if (state_next[0]==samples_goal[0] and state_next[1]==samples_goal[1]):
+        #     reward=1
+        #     done=True
         #
-        samples_current=Extract.Extract_Samples(state_next[0],state_next[1])
+        samples_current=Extract.Extract_Spectrogram(state_next[0],state_next[1])
 
-        if (distance.euclidean(samples_goal, samples_current) == 0):
+        #if (distance.euclidean(samples_goal, samples_current) == 0):
+        if(np.mean(samples_goal)==np.mean(samples_current)):
             reward = 1
             done = True
 
