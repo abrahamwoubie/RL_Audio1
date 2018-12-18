@@ -113,8 +113,8 @@ pylab.xlim(1, np.max(Episode_Number)+1)
 pylab.xlabel('Episode Number')
 pylab.ylabel('Iteration')
 filename=str(grid_size.nRow)+'X'+str(grid_size.nCol)+'_'+str(parameter.how_many_times)+'_times.png'
-title='Grid Size = '+str(grid_size.nRow) + 'X'+str(grid_size.nCol)+', Start = Fixed, Goal= Fixed, Experiment Carried out = 20X'
-pylab.suptitle(title, fontsize=12)
+#title='Grid Size = '+str(grid_size.nRow) + 'X'+str(grid_size.nCol)+', Start = Fixed, Goal= Fixed, Experiment Carried out = 20X'
+#pylab.suptitle(title, fontsize=12)
 pylab.savefig(filename)
 pylab.show()
 

@@ -16,5 +16,5 @@ class GlobalVariables :
     batch_size = 32
     Number_of_episodes=50
     timesteps=200
-    how_many_times = 20 #How many times to run the same experiment
+    how_many_times = 10 #How many times to run the same experiment
 
