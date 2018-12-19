@@ -34,7 +34,9 @@ class Extract_Features:
         # Spectrogram of .wav file
         sample_freq, segment_time, spec_data = signal.spectrogram(data, sample_rate)
         if (row == grid_size.nRow and col == grid_size.nCol):
-            spec_data=spec_data*2
+            spec_data=spec_data*100
+        else:
+            spec_data = spec_data + row + col
         return spec_data
     # def Extract_Spectrogram(row, col):
     #     fs = 10e3
@@ -90,7 +92,7 @@ class Extract_Features:
         return pitch_List
 
     def Extract_Raw_Data (row, col):
-        sound = AudioSegment.from_wav("test.wav")
+        sound = AudioSegment.from_wav("Hello.wav")
         raw_data = sound._data
         if(row == grid_size.nRow and col == grid_size.nCol):
             raw_data=raw_data*5

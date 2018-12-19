@@ -7,7 +7,7 @@ from GlobalVariables import GlobalVariables
 
 Extract=Extract_Features
 grid_size=GlobalVariables
-
+options=GlobalVariables
 
 class Environment:
 
@@ -22,17 +22,17 @@ class Environment:
 
     def reset(self):
         # Reset agent state to top-left grid corner
-        # self.state = (0, 0)
-        # self.goal_state=(grid_size.nRow-1,grid_size.nCol-1)
+        self.state = (0, 0)
+        self.goal_state=(grid_size.nRow-1,grid_size.nCol-1)
         #
-        start_row = random.choice(range(0, grid_size.nRow - 1))
-        start_col = random.choice(range(0, grid_size.nCol - 1))
-
-        goal_row = random.choice(range(0, grid_size.nRow - 1))
-        goal_col = random.choice(range(0, grid_size.nCol - 1))
-
-        self.state = (start_row, start_col)
-        self.goal_state=(goal_row,goal_col)
+        # start_row = random.choice(range(0, grid_size.nRow - 1))
+        # start_col = random.choice(range(0, grid_size.nCol - 1))
+        # #
+        # goal_row = random.choice(range(0, grid_size.nRow - 1))
+        # goal_col = random.choice(range(0, grid_size.nCol - 1))
+        # #
+        # self.state = (start_row, start_col)
+        # self.goal_state=(goal_row,goal_col)
 
         return self.state, self.goal_state
 
@@ -56,12 +56,33 @@ class Environment:
         #     reward=1
         #     done=True
         #
-        samples_current=Extract.Extract_Spectrogram(state_next[0],state_next[1])
+        #samples_current=Extract.Extract_Spectrogram(state_next[0],state_next[1])
 
-        #if (distance.euclidean(samples_goal, samples_current) == 0):
-        if(np.mean(samples_goal)==np.mean(samples_current)):
-            reward = 1
-            done = True
+        if (options.use_samples):
+            samples_current=Extract.Extract_Samples(state_next[0],state_next[1])
+        elif (options.use_pitch):
+            samples_current = Extract.Extract_Pitch(state_next[0], state_next[1])
+        elif (options.use_spectrogram):
+            samples_current = Extract.Extract_Spectrogram(state_next[0], state_next[1])
+        else:
+            samples_current = Extract.Extract_Samples(state_next[0], state_next[1])
+
+        if(options.use_samples):
+            if (distance.euclidean(samples_goal, samples_current) == 0):
+                reward = 1
+                done = True
+        elif (options.use_pitch):
+            if (distance.euclidean(samples_goal, samples_current) == 0):
+                reward = 1
+                done = True
+        elif(options.use_spectrogram):
+            if (np.mean(samples_goal)==np.mean(samples_current)):
+                reward = 1
+                done = True
+        else:
+            if (np.mean(samples_goal) == np.mean(samples_current)):
+                reward = 1
+                done = True
 
         # Update state
         self.state = state_next
