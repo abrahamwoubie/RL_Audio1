@@ -38,6 +38,7 @@ class Extract_Features:
         else:
             spec_data = spec_data + row + col
         return spec_data
+
     # def Extract_Spectrogram(row, col):
     #     fs = 10e3
     #     N = 1e5

@@ -34,28 +34,35 @@ for i in range(parameter.how_many_times):
         if (options.use_samples):
             state=samples.Extract_Samples(state[0],state[1])
             samples_goal = samples.Extract_Samples(goal_state[0],goal_state[1])
+            state = np.reshape(state, [1, parameter.sample_state_size])
         elif (options.use_pitch):
-            state = samples.Extract_Samples(state[0], state[1])
+            state = samples.Extract_Pitch(state[0], state[1])
             samples_goal = samples.Extract_Pitch(goal_state[0],goal_state[1])
+            state = np.reshape(state, [1, parameter.pitch_state_size])
         elif (options.use_spectrogram):
-            state = samples.Extract_Samples(state[0], state[1])
+            state = samples.Extract_Spectrogram(state[0], state[1])
             samples_goal = samples.Extract_Spectrogram(goal_state[0],goal_state[1])
         else:
-            state = samples.Extract_Samples(state[0], state[1])
+            state = samples.Extract_Raw_Data(state[0], state[1])
             samples_goal = samples.Extract_Raw_Data(goal_state[0],goal_state[1])
 
-        state = np.reshape(state, [1, parameter.state_size])
-
+        #state = np.reshape(state, [57788,2,1])
+        #print(state.shape)
         iterations=0
         Number_of_Episodes.append(episode)
         for time in range(parameter.timesteps):
         #done=False
         #while True:
+        #print("One")
         #while not done:
+            #print("Two")
             iterations+=1
             action = agent.act(state)
             next_state, reward, done = env.step(action,samples_goal)
-            next_state = np.reshape(next_state, [1, parameter.state_size])
+            if(options.use_samples):
+                next_state = np.reshape(next_state, [1, parameter.sample_state_size])
+            if (options.use_pitch):
+                next_state = np.reshape(next_state, [1, parameter.pitch_state_size])
             agent.replay_memory(state, action, reward, next_state, done)
             state = next_state
             if done:
@@ -109,7 +116,7 @@ pylab.ylabel('Iteration')
 filename=str(grid_size.nRow)+'X'+str(grid_size.nCol)+'_'+str(parameter.how_many_times)+'_times.png'
 #title='Grid Size = '+str(grid_size.nRow) + 'X'+str(grid_size.nCol)+', Start = Fixed, Goal= Fixed, Experiment Carried out = 20X'
 #pylab.suptitle(title, fontsize=12)
-pylab.savefig(filename)
+#pylab.savefig(filename)
 pylab.show()
 
 

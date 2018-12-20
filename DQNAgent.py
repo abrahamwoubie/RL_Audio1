@@ -3,17 +3,25 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 from GlobalVariables import GlobalVariables
-from keras.layers import Dense, Conv2D, Flatten
+from keras.layers import Dense, Conv2D, Flatten,Conv1D, MaxPooling2D,Convolution2D,GlobalAveragePooling2D
 from keras import optimizers
 import random
 import numpy as np
 
 parameter=GlobalVariables
 grid_size=GlobalVariables
+options=GlobalVariables
 
 class DQNAgent:
     def __init__(self,env):
-        self.state_dim=parameter.state_size
+        if(options.use_samples):
+            self.state_dim=parameter.sample_state_size
+        elif(options.use_pitch):
+            self.state_dim = parameter.pitch_state_size
+        elif(options.use_spectrogram):
+            self.state_dim = parameter.spectrogram_state_size
+        else:
+            self.state_dim = parameter.raw_data_state_size
         self.action_dim=parameter.action_size
         self.memory = deque(maxlen=2000)
         self.discount_factor = 0.99    # discount rate
@@ -23,27 +31,32 @@ class DQNAgent:
         self.learning_rate = 0.001
         self.exploration_min = 0.01
         self.exploration_decay = 0.995
-        self.model = self._build_model()
-
+        if(options.use_samples or options.use_pitch):
+            self.model = self._build_model()
+        else:
+            self.model=self._build_CNN_model()
+        print(self.model.summary())
 
     def _build_model(self):
         # Neural Net for Deep-Q learning Model
         model = Sequential()
-        model.add(Dense(24, input_shape=(parameter.state_size,), kernel_initializer='uniform',activation='softmax'))
+        model.add(Dense(24, input_shape=(self.state_dim,), kernel_initializer='uniform', activation='softmax'))
         model.add(Dense(24, activation='softmax', kernel_initializer='uniform'))
         model.add(Dense(parameter.action_size, activation='linear'))
-        #model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
         model.compile(loss='mean_squared_error', optimizer='sgd')
         return model
 
     def _build_CNN_model(self):
         model = Sequential()
-        model.add(Conv2D(64, kernel_size=1, activation='relu', input_shape=(parameter.state_size,2,1)))
+        model.add(Conv2D(64, kernel_size=1, activation='relu', input_shape=(57788,2,1)))
         model.add(Conv2D(32, kernel_size=1, activation='relu'))
         model.add(Flatten())
-        model.add(Dense(4, activation='softmax'))
-        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        model.add(Dense(parameter.action_size, activation='softmax'))
+        sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+        model.compile(loss='mean_squared_error', optimizer='sgd')
+        return model
+
 
     def replay_memory(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
