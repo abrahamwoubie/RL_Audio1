@@ -31,10 +31,6 @@ class DQNAgent:
         self.learning_rate = 0.001
         self.exploration_min = 0.01
         self.exploration_decay = 0.995
-
-        self.train_start = 100
-
-
         if(options.use_samples or options.use_pitch):
             self.model = self._build_model()
         else:
@@ -53,10 +49,10 @@ class DQNAgent:
 
     def _build_CNN_model(self):
         model = Sequential()
-        model.add(Conv2D(64, (1, 1), activation='relu', input_shape=(57788, 2, 1)))
+        model.add(Conv2D(64, (1, 1), activation='relu', input_shape=(self.state_dim, 2, 1)))
         model.add(Conv2D(32, (1, 1), activation='relu'))
         model.add(Flatten())
-        model.add(Dense(4, activation='softmax'))
+        model.add(Dense(parameter.action_size, activation='softmax'))
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
         model.compile(loss='mean_squared_error', optimizer='sgd')
         return model
