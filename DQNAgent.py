@@ -31,6 +31,10 @@ class DQNAgent:
         self.learning_rate = 0.001
         self.exploration_min = 0.01
         self.exploration_decay = 0.995
+
+        self.train_start = 100
+
+
         if(options.use_samples or options.use_pitch):
             self.model = self._build_model()
         else:
@@ -49,10 +53,10 @@ class DQNAgent:
 
     def _build_CNN_model(self):
         model = Sequential()
-        model.add(Conv2D(64, kernel_size=1, activation='relu', input_shape=(57788,2,1)))
-        model.add(Conv2D(32, kernel_size=1, activation='relu'))
+        model.add(Conv2D(64, (1, 1), activation='relu', input_shape=(57788, 2, 1)))
+        model.add(Conv2D(32, (1, 1), activation='relu'))
         model.add(Flatten())
-        model.add(Dense(parameter.action_size, activation='softmax'))
+        model.add(Dense(4, activation='softmax'))
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
         model.compile(loss='mean_squared_error', optimizer='sgd')
         return model
@@ -86,12 +90,13 @@ class DQNAgent:
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
-                target = (reward + self.discount_factor * np.max(self.model.predict(next_state)[0]))
+                target = (reward + self.discount_factor * np.amax(self.model.predict(next_state)[0]))
             target_f = self.model.predict(state)
             target_f[0][action] = target
-            self.model.fit(state, target_f, batch_size=parameter.batch_size,epochs=1, verbose=0)
+            self.model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
 
     def load(self, name):
         self.model.load_weights(name)

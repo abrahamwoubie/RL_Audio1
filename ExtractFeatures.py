@@ -95,6 +95,4 @@ class Extract_Features:
     def Extract_Raw_Data (row, col):
         sound = AudioSegment.from_wav("Hello.wav")
         raw_data = sound._data
-        if(row == grid_size.nRow and col == grid_size.nCol):
-            raw_data=raw_data*5
         return raw_data

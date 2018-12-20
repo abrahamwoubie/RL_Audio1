@@ -2,8 +2,8 @@ class GlobalVariables :
 
     #options for running different experiments
     use_samples = 0
-    use_pitch = 1
-    use_spectrogram = 0
+    use_pitch = 0
+    use_spectrogram = 1
     use_raw_data = 0
 
     #Grid Size
@@ -13,7 +13,7 @@ class GlobalVariables :
     #parameters
     sample_state_size = 100
     pitch_state_size= 87
-    spectrogram_state_size= 100
+    spectrogram_state_size= 57788
     raw_data_state_size= 100
     action_size = 4
     batch_size = 32

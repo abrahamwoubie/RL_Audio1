@@ -65,7 +65,7 @@ class Environment:
         elif (options.use_spectrogram):
             samples_current = Extract.Extract_Spectrogram(state_next[0], state_next[1])
         else:
-            samples_current = Extract.Extract_Samples(state_next[0], state_next[1])
+            samples_current = Extract.Extract_Raw_Data(state_next[0], state_next[1])
 
         if(options.use_samples):
             if (distance.euclidean(samples_goal, samples_current) == 0):

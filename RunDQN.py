@@ -47,7 +47,6 @@ for i in range(parameter.how_many_times):
             samples_goal = samples.Extract_Raw_Data(goal_state[0],goal_state[1])
 
         #state = np.reshape(state, [57788,2,1])
-        #print(state.shape)
         iterations=0
         Number_of_Episodes.append(episode)
         for time in range(parameter.timesteps):
