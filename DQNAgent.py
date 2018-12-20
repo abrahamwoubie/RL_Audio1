@@ -7,6 +7,7 @@ from keras.layers import Dense, Conv2D, Flatten,Conv1D, MaxPooling2D,Convolution
 from keras import optimizers
 import random
 import numpy as np
+from keras.layers import MaxPooling1D,GlobalAveragePooling1D,Dropout,LSTM,TimeDistributed,AveragePooling1D,Embedding,Activation
 
 parameter=GlobalVariables
 grid_size=GlobalVariables
@@ -44,7 +45,7 @@ class DQNAgent:
         model.add(Dense(24, activation='softmax', kernel_initializer='uniform'))
         model.add(Dense(parameter.action_size, activation='linear'))
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-        model.compile(loss='mean_squared_error', optimizer='sgd')
+        model.compile(loss='mean_squared_error', optimizer='sgd',metrics=['accuracy'])
         return model
 
     def _build_CNN_model(self):
@@ -56,7 +57,6 @@ class DQNAgent:
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
         model.compile(loss='mean_squared_error', optimizer='sgd')
         return model
-
 
     def replay_memory(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
@@ -86,7 +86,7 @@ class DQNAgent:
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
-                target = (reward + self.discount_factor * np.amax(self.model.predict(next_state)[0]))
+                target = (reward + self.discount_factor * np.max(self.model.predict(next_state)[0]))
             target_f = self.model.predict(state)
             target_f[0][action] = target
             self.model.fit(state, target_f, epochs=1, verbose=0)
