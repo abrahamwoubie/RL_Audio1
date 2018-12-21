@@ -40,7 +40,7 @@ class Agent:
         # -----------------------------
         (state, action, state_next, reward, done) = memory
         sa = state + (action,)
-        #print('sa',sa)
+        print(memory)
         #print("State is {} Action {}".format(state,(action,)))
         self.Q[sa] += self.beta * (reward + self.gamma * np.max(self.Q[state_next]) - self.Q[sa])
 

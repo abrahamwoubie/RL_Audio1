@@ -28,10 +28,11 @@ for i in range(parameter.how_many_times):
 
         # Generate an episode
         iter_episode, reward_episode = 0, 0
-        state,goal_state = env.reset()  # starting state
+        state,goal_state,wall = env.reset()  # starting state
         Number_of_Episodes.append(episode)
         iteration=0
-        while True:
+        #while True:
+        for i in range(parameter.timesteps):
             iteration+=1
             action = agent.get_action(env)  # get action
 
@@ -69,7 +70,7 @@ for i in range(parameter.how_many_times):
     #filename=title+'.png'
     #plt.savefig(filename)
     plt.show(block=False)
-    plt.pause(3)
+#    plt.pause(3)
     plt.close()
 
 mu=np.mean(list, axis=0)

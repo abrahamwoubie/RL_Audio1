@@ -29,7 +29,7 @@ for i in range(parameter.how_many_times):
     for episode in range(1,parameter.Number_of_episodes+1):
         #file = open(filename, 'a')
         #done = False
-        state,goal_state = env.reset()
+        state,goal_state,wall = env.reset()
 
         if (options.use_samples):
             state=samples.Extract_Samples(state[0],state[1])

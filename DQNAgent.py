@@ -60,7 +60,7 @@ class DQNAgent:
 
     def replay_memory(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
-
+        print(state, action, reward, next_state, done)
     def get_action(self, env):
         # Epsilon-greedy agent policy
         if random.uniform(0, 1) < self.epsilon:
