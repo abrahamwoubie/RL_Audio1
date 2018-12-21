@@ -32,8 +32,22 @@ class Environment:
         # goal_row = random.choice(range(0, grid_size.nRow - 1))
         # goal_col = random.choice(range(0, grid_size.nCol - 1))
         # #
+        #
+        # wall_row=random.choice(range(0,grid_size.nRow-1))
+        # wall_col=random.choice(range(0,grid_size.nCol-1))
+        #
+        # while(wall_row==start_row and wall_col==start_col):
+        #     wall_row = random.choice(range(0, grid_size.nRow - 1))
+        #     wall_col = random.choice(range(0, grid_size.nCol - 1))
+        #
+        # while(wall_row!=goal_row and wall_col!=goal_col):
+        #     wall_row = random.choice(range(0, grid_size.nRow - 1))
+        #     wall_col = random.choice(range(0, grid_size.nCol - 1))
+
+        #
         # self.state = (start_row, start_col)
         # self.goal_state=(goal_row,goal_col)
+        # self.wall = (wall_row,wall_col)
 
         return self.state, self.goal_state,self.wall
 
@@ -53,38 +67,51 @@ class Environment:
         if(action==3): # left
             state_next = self.state[0]  , (self.state[1] - 1)
 
-        if(state_next[0]==grid_size.nRow-1 and state_next[1]==grid_size.nCol-1):
-            reward=1
-            done=True
-        # if (options.use_samples):
-        #     samples_current=Extract.Extract_Samples(state_next[0],state_next[1])
-        # elif (options.use_pitch):
-        #     samples_current = Extract.Extract_Pitch(state_next[0], state_next[1])
-        # elif (options.use_spectrogram):
-        #     samples_current = Extract.Extract_Spectrogram(state_next[0], state_next[1])
-        # else:
-        #     samples_current = Extract.Extract_Raw_Data(state_next[0], state_next[1])
-        #
-        # if(options.use_samples):
-        #     if (distance.euclidean(samples_goal, samples_current) == 0):
-        #         reward = 1
-        #         done = True
-        # elif (options.use_pitch):
-        #     if (distance.euclidean(samples_goal, samples_current) == 0):
-        #         reward = 1
-        #         done = True
-        # elif(options.use_spectrogram):
-        #     if (np.mean(samples_goal)==np.mean(samples_current)):
-        #         reward = 1
-        #         done = True
-        # else:
-        #     if (np.mean(samples_goal) == np.mean(samples_current)):
-        #         reward = 1
-        #         done = True
-        # Update state
-        self.state = state_next
-        #return samples_current, reward, done
-        return state_next,reward,done
+        if(state_next[0]==self.wall[0] and state_next[1]==self.wall[1]): # If next state is a wall, it can't pass
+            #print("Can pass through the wall")
+            if(options.use_samples):
+                samples=Extract.Extract_Samples(self.state[0],self.state[1])
+            elif(options.use_pitch):
+                samples = Extract.Extract_Pitch(self.state[0], self.state[1])
+            elif(options.use_spectrogram):
+                samples = Extract.Extract_Spectrogram(self.state[0], self.state[1])
+            else:
+                samples = Extract.Extract_Raw_Data(self.state[0], self.state[1])
+            return samples,reward,done
+        else:
+
+        # if(state_next[0]==grid_size.nRow-1 and state_next[1]==grid_size.nCol-1):
+        #         reward=1
+        #         done=True
+            if (options.use_samples):
+                samples_current=Extract.Extract_Samples(state_next[0],state_next[1])
+            elif (options.use_pitch):
+                samples_current = Extract.Extract_Pitch(state_next[0], state_next[1])
+            elif (options.use_spectrogram):
+                samples_current = Extract.Extract_Spectrogram(state_next[0], state_next[1])
+            else:
+                samples_current = Extract.Extract_Raw_Data(state_next[0], state_next[1])
+
+            if(options.use_samples):
+                if (distance.euclidean(samples_goal, samples_current) == 0):
+                    reward = 1
+                    done = True
+            elif (options.use_pitch):
+                if (distance.euclidean(samples_goal, samples_current) == 0):
+                    reward = 1
+                    done = True
+            elif(options.use_spectrogram):
+                if (np.mean(samples_goal)==np.mean(samples_current)):
+                    reward = 1
+                    done = True
+            else:
+                if (np.mean(samples_goal) == np.mean(samples_current)):
+                    reward = 1
+                    done = True
+            # Update state
+            self.state = state_next
+            return samples_current, reward, done
+            #return state_next,reward,done
 
     def allowed_actions(self):
         # Generate list of actions allowed depending on agent grid location

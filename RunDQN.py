@@ -30,7 +30,6 @@ for i in range(parameter.how_many_times):
         #file = open(filename, 'a')
         #done = False
         state,goal_state,wall = env.reset()
-
         if (options.use_samples):
             state=samples.Extract_Samples(state[0],state[1])
             samples_goal = samples.Extract_Samples(goal_state[0],goal_state[1])

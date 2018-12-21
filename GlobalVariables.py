@@ -11,13 +11,13 @@ class GlobalVariables :
     nCol = 3
 
     #parameters
-    sample_state_size = 2
+    sample_state_size = 100
     pitch_state_size= 87
     spectrogram_state_size= 57788
     raw_data_state_size= 100
     action_size = 4
     batch_size = 32
-    Number_of_episodes=10
+    Number_of_episodes=100
     timesteps=(nRow+nCol+nRow)
     how_many_times = 1 #How many times to run the same experiment
 

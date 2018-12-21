@@ -16,7 +16,7 @@ class Extract_Features:
     def Extract_Samples(row, col):
         #print("Extract Sample of Row {} Col {} nRow {} nCol {}".format(row,col,nRow,nCol))
 
-        fs = 2  # sample rate
+        fs = 100  # sample rate
         f = 2  # the frequency of the signal
 
         x = np.arange(fs)  # the points on the x axis for plotting
