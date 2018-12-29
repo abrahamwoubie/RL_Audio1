@@ -32,7 +32,7 @@ class DQNAgent:
         self.learning_rate = 0.001
         self.exploration_min = 0.01
         self.exploration_decay = 0.995
-        if(options.use_samples or options.use_pitch):
+        if(options.use_dense):
             self.model = self._build_model()
         else:
             self.model=self._build_CNN_model()
@@ -40,23 +40,56 @@ class DQNAgent:
 
     def _build_model(self):
         # Neural Net for Deep-Q learning Model
+        print("Dense Network")
         model = Sequential()
         model.add(Dense(24, input_shape=(self.state_dim,), kernel_initializer='uniform', activation='softmax'))
         model.add(Dense(24, activation='softmax', kernel_initializer='uniform'))
         model.add(Dense(parameter.action_size, activation='linear'))
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-        model.compile(loss='mean_squared_error', optimizer='sgd',metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer='sgd',metrics=['accuracy'])
         return model
 
     def _build_CNN_model(self):
+        # print("CNN Network")
         model = Sequential()
-        model.add(Conv2D(64, (1, 1), activation='relu', input_shape=(self.state_dim, 2, 1)))
-        model.add(Conv2D(32, (1, 1), activation='relu'))
+        model.add(Conv1D(64, 3, activation='relu', input_shape=(self.state_dim,1)))
+        model.add(Conv1D(32, 3, activation='relu'))
+        model.add(MaxPooling1D(3))
+        model.add(Conv1D(64, 3, activation='relu', input_shape=(self.state_dim, 1)))
+        model.add(Conv1D(32, 3, activation='relu'))
+        model.add(MaxPooling1D(3))
+        model.add(Dropout(0.5))
         model.add(Flatten())
         model.add(Dense(parameter.action_size, activation='softmax'))
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-        model.compile(loss='mean_squared_error', optimizer='sgd')
+        model.compile(loss='categorical_crossentropy', optimizer='sgd')
         return model
+
+        # model = Sequential()
+        # model.add(Conv1D(100, 10, activation='relu', input_shape=(self.state_dim,1)))
+        # model.add(Conv1D(100, 10, activation='relu'))
+        # model.add(MaxPooling1D(3))
+        # model.add(Conv1D(160, 10, activation='relu'))
+        # model.add(Conv1D(160, 10, activation='relu'))
+        # model.add(MaxPooling1D(3))
+        # model.add(Dropout(0.5))
+        # model.add(Dense(parameter.action_size, activation='softmax'))
+        # sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+        # model.compile(loss='categorical_crossentropy', optimizer='sgd')
+        # return model
+
+        # model = Sequential()
+        # model.add(Conv1D(100, 10, activation='relu', input_shape=(self.state_dim,1)))
+        # model.add(Conv1D(100, 10, activation='relu'))
+        # model.add(MaxPooling1D(3))
+        # model.add(Conv1D(160, 10, activation='relu'))
+        # model.add(Conv1D(160, 10, activation='relu'))
+        # model.add(MaxPooling1D(3))
+        # model.add(Dropout(0.5))
+        # model.add(Dense(parameter.action_size, activation='softmax'))
+        # sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+        # model.compile(loss='categorical_crossentropy', optimizer='sgd')
+        # return model
 
     def replay_memory(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))

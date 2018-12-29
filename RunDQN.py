@@ -34,18 +34,25 @@ for i in range(parameter.how_many_times):
             state=samples.Extract_Samples(state[0],state[1])
             samples_goal = samples.Extract_Samples(goal_state[0],goal_state[1])
             state = np.reshape(state, [1, parameter.sample_state_size])
-        elif (options.use_pitch):
+
+        if (options.use_pitch and options.use_dense):
             state = samples.Extract_Pitch(state[0], state[1])
             samples_goal = samples.Extract_Pitch(goal_state[0],goal_state[1])
             state = np.reshape(state, [1, parameter.pitch_state_size])
-        elif (options.use_spectrogram):
+
+        if (options.use_pitch and options.use_CNN):
+            state = samples.Extract_Pitch(state[0], state[1])
+            samples_goal = samples.Extract_Pitch(goal_state[0],goal_state[1])
+            state = np.reshape(state, [1, parameter.pitch_state_size,1])
+            #state = np.expand_dims(state, axis=2)
+
+        if (options.use_spectrogram and options.use_CNN):
             state = samples.Extract_Spectrogram(state[0], state[1])
             samples_goal = samples.Extract_Spectrogram(goal_state[0],goal_state[1])
-        else:
-            state = samples.Extract_Raw_Data(state[0], state[1])
-            samples_goal = samples.Extract_Raw_Data(goal_state[0],goal_state[1])
-
+            state = np.reshape(state, [parameter.spectrogram_length, parameter.spectrogram_state_size, 1])
+            #state = np.expand_dims(state, axis=2)
         #state = np.reshape(state, [57788,2,1])
+        #print(state.shape)
         iterations=0
         Number_of_Episodes.append(episode)
         for time in range(parameter.timesteps):
@@ -59,8 +66,12 @@ for i in range(parameter.how_many_times):
             next_state, reward, done = env.step(action,samples_goal)
             if(options.use_samples):
                 next_state = np.reshape(next_state, [1, parameter.sample_state_size])
-            if (options.use_pitch):
+            if (options.use_pitch and options.use_dense):
                 next_state = np.reshape(next_state, [1, parameter.pitch_state_size])
+            if (options.use_pitch and options.use_CNN):
+                next_state = np.reshape(next_state, [1, parameter.pitch_state_size,1])
+            if (options.use_spectrogram and options.use_CNN):
+                next_state = np.reshape(next_state, [parameter.spectrogram_length, parameter.spectrogram_state_size,1])
             agent.replay_memory(state, action, reward, next_state, done)
             state = next_state
             if done:
@@ -80,8 +91,8 @@ for i in range(parameter.how_many_times):
     list.append(Number_of_Iterations)
     print(list)
 
-    #percentage_of_successful_episodes = (sum(reward_List) / parameter.Number_of_episodes) * 100
-    #print("Percentage of Successful Episodes is {} {}".format(percentage_of_successful_episodes, '%'))
+    percentage_of_successful_episodes = (sum(reward_List) / parameter.Number_of_episodes) * 100
+    print("Percentage of Successful Episodes at Iteration {} is {} {}".format(i+1,percentage_of_successful_episodes, '%'))
 
     fig = plt.figure()
     fig.suptitle('Q-Learning', fontsize=12)
