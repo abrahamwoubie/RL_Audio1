@@ -62,6 +62,7 @@ class DQNAgent:
             actions_greedy = actions_allowed[np.flatnonzero(Q_s == np.max(Q_s))]
             return np.random.choice(actions_greedy)
 
+
     def act(self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(parameter.action_size)
